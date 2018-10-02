@@ -4,10 +4,14 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { Prop, Vue, Component, Watch } from 'vue-property-decorator'
 
-export default {
-  name: 'home'
+@Component({
+  name: 'mainhome'
+  })
+export default class MainHome extends Vue {
+
 }
 </script>
 

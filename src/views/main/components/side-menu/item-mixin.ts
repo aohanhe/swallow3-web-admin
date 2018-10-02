@@ -2,20 +2,20 @@ import { Prop, Vue, Component } from 'vue-property-decorator'
 
 @Component
 export default class ItemMixin extends Vue {
-  @Prop()
-  parentItem:any={}
-  @Prop()
-  theme: string=''
-  @Prop()
-  iconSize: number=0
+  @Prop({ default: () => {} })
+  parentItem?:any
+  @Prop({ default: '' })
+  theme?: string
+  @Prop({ default: 0 })
+  iconSize?: number
 
-  parentName () {
+  get parentName () {
     return this.parentItem.name
   }
-  children () {
+  get children () {
     return this.parentItem.children
   }
-  textColor () {
+  get textColor () {
     return this.theme === 'dark' ? '#fff' : '#495060'
   }
 }

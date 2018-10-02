@@ -1,7 +1,7 @@
 <template>
   <div class="user-avator-dropdown">
     <Dropdown @on-click="handleClick">
-      <Avatar :src="userAvator"/>
+      <Avatar :src="avator"/>
       <Icon :size="18" type="md-arrow-dropdown"></Icon>
       <DropdownMenu slot="list">
         <DropdownItem name="logout">退出登录</DropdownItem>
@@ -22,6 +22,14 @@ import { dispatchHandleLogOut } from '@/store/dispatcher'
 export default class User extends Vue {
     @Prop({ default: '' })
     userAvator?:string
+
+    get avator () {
+      // 如果用户没有给出头像就使用默认的
+      if (!this.userAvator) {
+        return require('@/assets/images/swallow2.png')
+      }
+      return this.userAvator
+    }
 
     handleClick (name:string) {
       switch (name) {

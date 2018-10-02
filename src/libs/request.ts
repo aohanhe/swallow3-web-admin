@@ -9,17 +9,11 @@ const baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : co
 const RESPONSE_SUCCESS:number = 0
 
 /**
- * 服务回复明细
- */
-export interface ResponseDataDetail{
-
-}
-/**
  * 分页服务回复
  */
-export interface ResponseDataPager extends ResponseDataDetail{
+export interface ResponseDataPager<T> {
     total:number
-    items:Array<any>
+    items:Array<T>
 }
 
 /**
@@ -28,7 +22,14 @@ export interface ResponseDataPager extends ResponseDataDetail{
 export interface ResponseData{
     code:number
     message?:string
-    data:ResponseDataDetail
+    data?:any
+}
+
+/**
+ * 分页数据结果
+ */
+export interface PagerResponseData<T> extends ResponseData{
+  data?:ResponseDataPager<T>
 }
 
 /**
@@ -39,16 +40,27 @@ export interface ResponseError {
     message:string
 }
 
+/**
+ * 查询对象
+ */
+export interface Query<T>{
+  query?:T
+  page:number
+  pageSize:number
+  sorts:Array<string>
+}
+
 export default function request<T extends ResponseData> (req:AxiosRequestConfig) {
   return new Promise<T>((resolve, reject) => {
     let reqData=req
 
     // 根据环境变量取得服务地址
     let url=req.url as string
+
     url=url.startsWith('/')?baseUrl+url:baseUrl+'/'+url
     reqData.url=url
 
-    console.debug('向服务器发送数据请求:%o', reqData)
+    console.log('向服务器发送数据请求:%o', reqData)
 
     // 向reqData中添加token数据
 
@@ -56,7 +68,7 @@ export default function request<T extends ResponseData> (req:AxiosRequestConfig)
       .then(response => {
         let resp:T=response.data
 
-        console.debug('收到服务回复的数据请求:%o', response)
+        console.log('收到服务回复的数据请求:%o', response)
 
         // 检查服务器返回的数据的code值是否正确
         if (resp.code) {
@@ -75,7 +87,7 @@ export default function request<T extends ResponseData> (req:AxiosRequestConfig)
           resolve(response.data)
         }
       }).catch((resonse) => {
-        console.debug('收到服务回复的数据请求错误:%o', resonse)
+        console.error('收到服务回复的数据请求错误:%o', resonse)
 
         let error:ResponseError={
           code: resonse.code,

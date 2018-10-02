@@ -1,8 +1,6 @@
 
 import request, { ResponseData } from '@/libs/request'
 import config from '@/config'
-import { resolve } from 'path'
-import { rejects } from 'assert'
 
 // 当前是否与服务器联调
 const isDebugLocal:boolean = (process.env.NODE_ENV === 'development' && !config.isConnectDebugSever)
@@ -57,7 +55,7 @@ export default class Users {
         let resp:UserInfoResponse={
           userId: 1,
           userName: 'admin',
-          avator: '@/asserts/images/swallow.png',
+          avator: undefined,
           code: 0,
           data: {},
           access: []
@@ -77,9 +75,20 @@ export default class Users {
   }
 
   static logout (token:string):Promise<ResponseData> {
-    return request({
-      url: 'logout',
-      method: 'post'
-    })
+    if (isDebugLocal) {
+      return new Promise<ResponseData>((resolve, reject) => {
+        let resp:ResponseData={
+          code: 0,
+          message: '',
+          data: {}
+        }
+        resolve(resp)
+      })
+    } else {
+      return request({
+        url: 'logout',
+        method: 'post'
+      })
+    }
   }
 }
