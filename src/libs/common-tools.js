@@ -224,3 +224,21 @@ export const doCustomTimes = (times, callback) => {
     callback(i)
   }
 }
+
+/**
+ * 对象复制
+ */
+export const objectCopy = (p) => {
+  var c = {}
+  for (var i in p) {
+    if (!p.hasOwnProperty(i)||i.startsWith('_')) {
+      continue
+    }
+    if (typeof p[i] === 'object') {
+      c[i] = (p[i].constructor === Array) ? [] : {}; deepCopy(p[i], c[i])
+    } else {
+      c[i] = p[i]
+    }
+  }
+  return c
+}

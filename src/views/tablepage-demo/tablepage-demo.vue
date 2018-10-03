@@ -1,9 +1,13 @@
 <template>
   <tables-page :showExportExcel="true" :columDefines="colums" :data="data"  :operColumDefines="opers" :total="total"
-    @OnTableDelRow="onTableRow" @onPageDataRefresh="onPageDataRefresh" @OnClearQuery="onClearQuery"
+    @OnTableDelRow="onTableDelRow" @onPageDataRefresh="onPageDataRefresh" @OnClearQuery="onClearQuery"
+    @OnAddNew="onAddNew" @onTableRowView="onViewData" @onTableRowEdit="onEditData"
   >
       <template slot="seacherbar" >
           <Input placeholder="姓名" v-model="query.query.name" style="width:150px"/>
+      </template>
+      <template slot="dialog">
+        <dialog-demo ref="dlg" @onFreshDataList="doFecthDataFromServer"></dialog-demo>
       </template>
   </tables-page>
 </template>
@@ -11,11 +15,13 @@
 import { Prop, Vue, Component, Watch } from 'vue-property-decorator'
 import TablesPage, { OperationItem, PageInfo } from '../components/tables-page/tables-page.vue'
 import { Query, ResponseDataPager } from '@/libs/request'
+import { DataDialogMode, DataDialogOperts } from '@/views/components/data-dialog/data-dialog-def'
 import Student, { StudentInfo, StudentPager } from '@/api/student'
+import DialogDemo from './dialog-demo.vue'
 
 @Component({
   name:"tableDemoPage",
-  components:{TablesPage}
+  components:{TablesPage, DialogDemo}
   })
 export default class TableDemoPage extends Vue {
     colums=[
@@ -61,10 +67,6 @@ export default class TableDemoPage extends Vue {
       action: (item:any) => { alert(item) }
     }]
 
-    onTableRow (item:any) {
-      alert(JSON.stringify(item))
-    }
-
   // 从服务器提取数据
     doFecthDataFromServer () {
       this.$Loading.start()
@@ -99,6 +101,29 @@ export default class TableDemoPage extends Vue {
     onClearQuery () {
       this.query.query={}
       this.doFecthDataFromServer()
+    }
+
+    // 数据查看
+    onViewData (row:any) {
+      let dlg=(this.$refs.dlg as any) as DataDialogOperts
+      dlg.showDlg(DataDialogMode.View, row)
+    }
+
+    // 新增数据操作
+    onAddNew () {
+      let dlg=(this.$refs.dlg as any) as DataDialogOperts
+      dlg.showAddNewDlg()
+    }
+
+    // 修改数据
+    onEditData (row:any) {
+      let dlg=(this.$refs.dlg as any) as DataDialogOperts
+      dlg.showDlg(DataDialogMode.Modi, row)
+    }
+
+    // 删除数据操作
+    onTableDelRow (item:any) {
+      alert(JSON.stringify(item))
     }
 }
 </script>

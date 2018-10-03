@@ -39,10 +39,13 @@
                      @on-change="onPageChange" @on-page-size-change="onPageSizeChange"/>
                 </Content>
             </Layout>
+            <!-- 用于放dialog的位置 -->
+            <slot name="dialog"></slot>
         </Card>
 
 </template>
 <script lang="ts">
+import { objectCopy } from '@/libs/common-tools.js'
 import { Prop, Vue, Component, Watch, Emit } from 'vue-property-decorator'
 import { Page, Table } from 'iview'
 
@@ -103,7 +106,12 @@ export default class TablePage extends Vue {
         let opers:Array<OperationItem>=[{
           icon: 'md-eye',
           action: this.viewRow
-        }]
+        },
+        {
+          icon: 'ios-create',
+          action: this.editRow
+        }
+        ]
 
         if (this.operColumDefines&&this.operColumDefines.length!==0) {
           opers = opers.concat(this.operColumDefines)
@@ -178,11 +186,6 @@ export default class TablePage extends Vue {
       this.selecLists=selection
     }
 
-    // 数据查看操作
-    viewRow (data:any) {
-
-    }
-
   // 清除查询条件
     clearQuery () {
       this.$emit('OnClearQuery')
@@ -196,6 +199,20 @@ export default class TablePage extends Vue {
     // 添加新的数据
     addNew () {
       this.$emit('OnAddNew')
+    }
+
+    // 数据查看操作
+    @Emit('onTableRowView')
+    viewRow (data:any) {
+      return data
+    }
+
+    // 修改数据
+    @Emit('onTableRowEdit')
+    editRow (data:any) {
+      let re=objectCopy(data)
+      console.log('dd %o', re)
+      return re
     }
 
     // 以下为数据删除操作
